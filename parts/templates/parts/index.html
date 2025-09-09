@@ -1,0 +1,380 @@
+{% extends 'parts/layout.html' %}
+
+{% block title %}MotorParts Pro - Professional Automotive Parts & Components{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <!-- Updated hero title with classic automotive messaging -->
+                <h1 class="display-3 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">Premium Automotive Parts for Every Drive</h1>
+                <p class="lead mb-4" style="font-size: 1.3rem;">Discover exceptional quality automotive components from the industry's most trusted manufacturers. Professional-grade parts with uncompromising reliability.</p>
+                
+                <!-- Advanced Search -->
+                <div class="row g-2 mb-4">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control form-control-lg search-bar" placeholder="Search by part name, OEM number, or vehicle..." style="padding: 1rem 1.5rem;">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary btn-lg search-btn w-100" style="padding: 1rem;">
+                            <i class="fas fa-search me-2"></i>Find Parts
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <!-- Updated icons to use accent color -->
+                            <i class="fas fa-shipping-fast fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Express Shipping</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <i class="fas fa-shield-alt fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Lifetime Warranty</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <i class="fas fa-award fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Certified Quality</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <!-- Updated hero image with classic automotive theme -->
+                <img src="/placeholder.svg?height=500&width=600" 
+                     alt="Premium Automotive Parts Warehouse" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <!-- Updated section title with classic styling -->
+            <h2 class="section-title">Explore Our Premium Categories</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">Professional-grade components for every automotive system</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="category-card h-100">
+                    <!-- Updated icons to use accent color -->
+                    <i class="fas fa-cogs fa-4x mb-3" style="color: var(--accent-color);"></i>
+                    <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">Engine Components</h5>
+                    <p class="text-muted mb-3">Precision-engineered pistons, gaskets, filters, and performance parts</p>
+                    <a href="/category/engine-parts" class="btn btn-outline-primary">Explore Collection</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="category-card h-100">
+                    <i class="fas fa-bolt fa-4x mb-3" style="color: var(--accent-color);"></i>
+                    <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">Electrical Systems</h5>
+                    <p class="text-muted mb-3">Premium batteries, alternators, starters, and wiring solutions</p>
+                    <a href="/category/electrical" class="btn btn-outline-primary">Explore Collection</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="category-card h-100">
+                    <i class="fas fa-car fa-4x mb-3" style="color: var(--accent-color);"></i>
+                    <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">Brake Systems</h5>
+                    <p class="text-muted mb-3">High-performance pads, rotors, calipers, and brake fluids</p>
+                    <a href="/category/brake-system" class="btn btn-outline-primary">Explore Collection</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="category-card h-100">
+                    <i class="fas fa-tools fa-4x mb-3" style="color: var(--accent-color);"></i>
+                    <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">Suspension</h5>
+                    <p class="text-muted mb-3">Professional shocks, struts, springs, and handling components</p>
+                    <a href="/category/suspension" class="btn btn-outline-primary">Explore Collection</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <!-- Updated featured products section with classic styling -->
+            <h2 class="section-title">Featured Premium Parts</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">Handpicked components from the world's finest manufacturers</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <img src="/placeholder.svg?height=250&width=350" 
+                         class="card-img-top" alt="Bosch Fuel Injector">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge mb-2 align-self-start" style="background-color: var(--accent-color);">Premium Stock</span>
+                        <h6 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">Bosch Precision Fuel Injector</h6>
+                        <p class="card-text text-muted small">German-engineered fuel injector with advanced spray pattern technology</p>
+                        <p class="text-muted small mb-2"><strong>OEM:</strong> FI-1234</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 fw-bold mb-0" style="color: var(--accent-color);">$89.99</span>
+                                <div style="color: #ffc107;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <small class="text-muted ms-1">(24)</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <img src="/placeholder.svg?height=250&width=350" 
+                         class="card-img-top" alt="Premium Brake Pads">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge mb-2 align-self-start" style="background-color: var(--accent-color);">Premium Stock</span>
+                        <h6 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">Ceramic Performance Brake Pads</h6>
+                        <p class="card-text text-muted small">Advanced ceramic compound for superior stopping power and longevity</p>
+                        <p class="text-muted small mb-2"><strong>OEM:</strong> BP-5678</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 fw-bold mb-0" style="color: var(--accent-color);">$45.99</span>
+                                <div style="color: #ffc107;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <small class="text-muted ms-1">(18)</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <img src="/placeholder.svg?height=250&width=350&N+high+performance+air+filter+automotive+part=" 
+                         class="card-img-top" alt="K&N Air Filter">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-warning text-dark mb-2 align-self-start">Limited Stock</span>
+                        <h6 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">K&N High-Flow Air Filter</h6>
+                        <p class="card-text text-muted small">Washable, reusable filter for enhanced airflow and engine performance</p>
+                        <p class="text-muted small mb-2"><strong>OEM:</strong> AF-9012</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 fw-bold mb-0" style="color: var(--accent-color);">$32.99</span>
+                                <div style="color: #ffc107;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <small class="text-muted ms-1">(31)</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <img src="/placeholder.svg?height=250&width=350" 
+                         class="card-img-top" alt="NGK Spark Plugs">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge mb-2 align-self-start" style="background-color: var(--accent-color);">Premium Stock</span>
+                        <h6 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">NGK Iridium Spark Plugs (Set of 4)</h6>
+                        <p class="card-text text-muted small">Ultra-fine iridium electrode for optimal ignition and fuel efficiency</p>
+                        <p class="text-muted small mb-2"><strong>OEM:</strong> SP-3456</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 fw-bold mb-0" style="color: var(--accent-color);">$28.99</span>
+                                <div style="color: #ffc107;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <small class="text-muted ms-1">(42)</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="/products" class="btn btn-secondary btn-lg px-5">
+                Explore All Premium Parts <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <!-- Added testimonials section for trust building -->
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">Trusted by automotive professionals and enthusiasts worldwide</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">"Outstanding quality parts and incredibly fast shipping. MotorParts Pro has become my go-to supplier for all automotive components."</p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mike Rodriguez</h6>
+                            <small class="text-muted">Auto Shop Owner</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">"The expertise and customer service is unmatched. They helped me find the exact OEM part I needed for my classic restoration project."</p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Sarah Chen</h6>
+                            <small class="text-muted">Classic Car Enthusiast</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">"Professional-grade parts at competitive prices. The warranty coverage gives me complete confidence in every purchase."</p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">David Thompson</h6>
+                            <small class="text-muted">Fleet Manager</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <!-- Updated section title with classic styling -->
+            <h2 class="section-title">The MotorParts Pro Advantage</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">Excellence in every component, service, and interaction</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <!-- Updated icons to use accent color -->
+                    <i class="fas fa-certificate fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">Certified Authentic Parts</h4>
+                <p class="text-muted">Every component is sourced directly from OEM manufacturers and authorized distributors, ensuring authenticity and reliability.</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-shipping-fast fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">Express Nationwide Delivery</h4>
+                <p class="text-muted">Same-day processing with expedited shipping options. Our advanced logistics network ensures rapid delivery across the country.</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-users fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">Expert Technical Support</h4>
+                <p class="text-muted">Our certified automotive specialists provide personalized guidance to ensure you get the perfect parts for your specific application.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <!-- Updated newsletter section with classic styling -->
+                <h3 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif; font-size: 2.2rem;">Stay Connected with Premium Updates</h3>
+                <p class="text-muted mb-4" style="font-size: 1.1rem;">Subscribe for exclusive access to new arrivals, technical insights, and special offers from the automotive industry's finest.</p>
+                
+                <form class="row g-2 justify-content-center">
+                    <div class="col-md-6">
+                        <input type="email" class="form-control form-control-lg" placeholder="Enter your professional email" style="padding: 1rem 1.5rem;">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-secondary btn-lg w-100" style="padding: 1rem;">Join Now</button>
+                    </div>
+                </form>
+                
+                <small class="text-muted mt-3 d-block">
+                    <i class="fas fa-shield-alt me-1" style="color: var(--accent-color);"></i>
+                    Your privacy is protected. Premium content, no spam, unsubscribe anytime.
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MotorParts Pro - Professional Automotive Parts{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Source+Sans+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <!-- Custom CSS -->
+    <link href="{% static "styles.css" %}" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1f2937;
+            --accent-color: #8b5cf6;
+            --secondary-color: #6b7280;
+            --text-color: #374151;
+            --light-bg: #f8fafc;
+            --border-color: #d1d5db;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #111827;
+            border-color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(31, 41, 55, 0.25);
+        }
+        
+        .btn-secondary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7c3aed;
+            border-color: #7c3aed;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+        }
+        
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .text-accent {
+            color: var(--accent-color) !important;
+        }
+        
+        .bg-light-custom {
+            background-color: var(--light-bg);
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #111827 100%) !important;
+            box-shadow: 0 4px 20px rgba(31, 41, 55, 0.15);
+        }
+        
+        .navbar .navbar-brand {
+            color: var(--white) !important;
+        }
+        
+        .navbar .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+        
+        .navbar .btn-outline-primary {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .navbar .btn-outline-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .navbar .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #111827 100%);
+            color: white;
+            padding: 120px 0;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/placeholder.svg?height=600&width=1200') center/cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--white);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(31, 41, 55, 0.15);
+            border-color: var(--accent-color);
+        }
+        
+        .category-card {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            padding: 2.5rem;
+            text-align: center;
+        }
+        
+        .category-card:hover {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: var(--accent-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+        }
+        
+        .trust-badge {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .trust-badge:hover {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .search-bar {
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-bar::placeholder {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .search-btn {
+            border-radius: 50px;
+            background: var(--accent-color);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #cbd5e1;
+        }
+        
+        .footer h5 {
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        
+        .footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--accent-color);
+            transform: translateX(2px);
+        }
+        
+        .premium-section {
+            background: var(--light-bg);
+            border-top: 3px solid var(--accent-color);
+        }
+        
+        .testimonial-card {
+            background: var(--white);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(31, 41, 55, 0.08);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 25px rgba(31, 41, 55, 0.15);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-color);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cog me-2"></i>MotorParts Pro
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/category/engine-parts">Engine Parts</a></li>
+                            <li><a class="dropdown-item" href="/category/electrical">Electrical Components</a></li>
+                            <li><a class="dropdown-item" href="/category/brake-system">Brake System</a></li>
+                            <li><a class="dropdown-item" href="/category/suspension">Suspension</a></li>
+                            <li><a class="dropdown-item" href="/category/transmission">Transmission</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manufacturers">Manufacturers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <form class="d-flex me-3" role="search">
+                        <input class="form-control me-2 search-bar" type="search" placeholder="Search parts..." style="min-width: 250px;">
+                        <button class="btn search-btn" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    
+                    <a href="/cart" class="btn btn-outline-primary me-2 position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: var(--accent-color);">
+                            3
+                        </span>
+                    </a>
+                    
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url "accounts:login" %}" class="btn btn-primary">
+                            <i class="fas fa-user me-1"></i>Account
+                        </a>
+                    {% else %}
+                        <a href="{% url "accounts:login" %}" class="btn btn-primary">
+                            <i class="fas fa-user me-1"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-cog me-2"></i>MotorParts Pro
+                    </h5>
+                    <p class="mb-3">Your trusted partner for high-quality automotive parts. We provide genuine and aftermarket parts for all vehicle makes and models.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-decoration-none">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none">
+                            <i class="fab fa-linkedin-in fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-3">Categories</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/category/engine-parts">Engine Parts</a></li>
+                        <li class="mb-2"><a href="/category/electrical">Electrical</a></li>
+                        <li class="mb-2"><a href="/category/brake-system">Brake System</a></li>
+                        <li class="mb-2"><a href="/category/suspension">Suspension</a></li>
+                        <li class="mb-2"><a href="/category/transmission">Transmission</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/help">Help Center</a></li>
+                        <li class="mb-2"><a href="/shipping">Shipping Info</a></li>
+                        <li class="mb-2"><a href="/returns">Returns</a></li>
+                        <li class="mb-2"><a href="/warranty">Warranty</a></li>
+                        <li class="mb-2"><a href="/contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-3">Company</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/about">About Us</a></li>
+                        <li class="mb-2"><a href="/careers">Careers</a></li>
+                        <li class="mb-2"><a href="/press">Press</a></li>
+                        <li class="mb-2"><a href="/blog">Blog</a></li>
+                        <li class="mb-2"><a href="/partners">Partners</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-3">Contact Info</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-phone me-2"></i>
+                            +1 (555) 123-4567
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            info@motorpartspro.com
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            123 Auto Street, Detroit, MI
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4" style="border-color: #475569;">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 MotorParts Pro. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="/privacy" class="me-3">Privacy Policy</a>
+                    <a href="/terms" class="me-3">Terms of Service</a>
+                    <a href="/cookies">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
