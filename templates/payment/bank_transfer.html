@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+
+{% block title %}Bank Transfer Payment - MotorParts Pro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-university me-2"></i>Bank Transfer Payment
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Please transfer <strong>₦{{ order.total_amount|floatformat:2 }}</strong> to any of the accounts below.
+                    </div>
+
+                    <!-- Bank Accounts -->
+                    {% for bank in bank_accounts %}
+                    <div class="card mb-3 border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">
+                                <i class="fas fa-university me-2"></i>{{ bank.bank_name }}
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <strong>Account Name:</strong><br>
+                                    {{ bank.account_name }}
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Account Number:</strong><br>
+                                    <span class="fs-4 text-primary fw-bold">{{ bank.account_number }}</span>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" 
+                                            onclick="copyToClipboard('{{ bank.account_number }}')">
+                                        <i class="fas fa-copy"></i> Copy
+                                    </button>
+                                </div>
+                                {% if bank.sort_code %}
+                                <div class="col-md-6">
+                                    <strong>Sort Code:</strong><br>
+                                    {{ bank.sort_code }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No bank accounts available. Please contact support.
+                    </div>
+                    {% endfor %}
+
+                    <!-- Payment Instructions -->
+                    <div class="alert alert-warning mt-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Important Instructions:
+                        </h6>
+                        <ul class="mb-0">
+                            <li>Use <strong>{{ payment.reference }}</strong> as your payment reference</li>
+                            <li>Transfer exactly <strong>₦{{ order.total_amount|floatformat:2 }}</strong></li>
+                            <li>After transfer, click "I Have Made Payment" below</li>
+                            <li>Your order will be processed after payment confirmation (1-24 hours)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="card bg-light mt-4">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">Payment Details</h6>
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <strong>Order Number:</strong><br>
+                                    {{ order.order_number }}
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong>Payment Reference:</strong><br>
+                                    {{ payment.reference }}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Amount to Pay:</strong><br>
+                                    <span class="text-primary fs-5">₦{{ order.total_amount|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-4">
+                        <form method="post" action="{% url 'payment:confirm_transfer' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
+                                <i class="fas fa-check-circle me-2"></i>I Have Made Payment
+                            </button>
+                        </form>
+                        <a href="{% url 'orders:detail' order.pk %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Account number copied!', 'success');
+    }, function(err) {
+        showToast('Could not copy text', 'error');
+    });
+}
+</script>
+{% endblock %}

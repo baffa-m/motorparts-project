@@ -1,0 +1,229 @@
+{% extends 'layout.html' %}
+
+{% block title %}Automotive Parts - MotorParts Pro{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="bg-light-custom py-3">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">All Parts</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="">
+                        <!-- Search -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Search</label>
+                            <input type="text" class="form-control" name="q" 
+                                   value="{{ request.GET.q }}" 
+                                   placeholder="Part name, OEM...">
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.slug }}" 
+                                    {% if request.GET.category == category.slug %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Manufacturer -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Manufacturer</label>
+                            <select class="form-select" name="manufacturer">
+                                <option value="">All Manufacturers</option>
+                                {% for manufacturer in manufacturers %}
+                                <option value="{{ manufacturer.slug }}"
+                                    {% if request.GET.manufacturer == manufacturer.slug %}selected{% endif %}>
+                                    {{ manufacturer.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Condition -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Condition</label>
+                            <select class="form-select" name="condition">
+                                <option value="">All Conditions</option>
+                                <option value="new" {% if request.GET.condition == 'new' %}selected{% endif %}>New</option>
+                                <option value="refurbished" {% if request.GET.condition == 'refurbished' %}selected{% endif %}>Refurbished</option>
+                                <option value="used" {% if request.GET.condition == 'used' %}selected{% endif %}>Used</option>
+                            </select>
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Vehicle Type</label>
+                            <select class="form-select" name="vehicle_type">
+                                <option value="">All Vehicles</option>
+                                <option value="car" {% if request.GET.vehicle_type == 'car' %}selected{% endif %}>Car</option>
+                                <option value="motorcycle" {% if request.GET.vehicle_type == 'motorcycle' %}selected{% endif %}>Motorcycle</option>
+                                <option value="truck" {% if request.GET.vehicle_type == 'truck' %}selected{% endif %}>Truck</option>
+                                <option value="suv" {% if request.GET.vehicle_type == 'suv' %}selected{% endif %}>SUV</option>
+                                <option value="van" {% if request.GET.vehicle_type == 'van' %}selected{% endif %}>Van</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" name="min_price" 
+                                           value="{{ request.GET.min_price }}" placeholder="Min">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" name="max_price" 
+                                           value="{{ request.GET.max_price }}" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-search me-2"></i>Apply Filters
+                        </button>
+                        <a href="{% url 'parts:index' %}" class="btn btn-outline-secondary w-100">
+                            Clear All
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <!-- Results Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-primary">Automotive Parts</h4>
+                    <p class="text-muted mb-0">Showing {{ parts|length }} results</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0">Sort:</label>
+                    <select class="form-select form-select-sm" style="width: auto;" 
+                            onchange="window.location.href=updateQueryParam('sort', this.value)">
+                        <option value="">Relevance</option>
+                        <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>
+                            Price: Low to High
+                        </option>
+                        <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>
+                            Price: High to Low
+                        </option>
+                        <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>
+                            Name: A-Z
+                        </option>
+                        <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>
+                            Newest
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row g-4">
+                {% for part in parts %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card product-card h-100">
+                        <div class="position-relative">
+                            <img src="{{ part.image.url }}" class="card-img-top" alt="{{ part.name }}">
+                            {% if part.stock_quantity > 0 %}
+                            <span class="badge bg-success position-absolute top-0 end-0 m-2">In Stock</span>
+                            {% else %}
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <small class="text-muted mb-1">{{ part.manufacturer.name }}</small>
+                            <h6 class="card-title mb-2">{{ part.name }}</h6>
+                            <p class="card-text text-muted small">{{ part.description|truncatewords:10 }}</p>
+                            <p class="text-muted small mb-2"><strong>OEM:</strong> {{ part.part_number }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="h5 text-primary fw-bold mb-0">{{ part.price }}</span>
+                                    <small class="text-muted">{{ part.stock_quantity }} left</small>
+                                </div>
+                                {% if part.stock_quantity > 0 %}
+                                <form method="post" action="{% url 'carts:add_to_cart' part.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-primary w-100 mb-2">
+                                        <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                    </button>
+                                </form>
+                                {% else %}
+                                <button class="btn btn-secondary w-100 mb-2" disabled>Out of Stock</button>
+                                {% endif %}
+                                <a href="{% url 'parts:detail' part.pk %}" class="btn btn-outline-primary w-100">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <h5>No parts found</h5>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Simple Pagination -->
+            {% if is_paginated %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function updateQueryParam(key, value) {
+    const url = new URL(window.location);
+    if (value) {
+        url.searchParams.set(key, value);
+    } else {
+        url.searchParams.delete(key);
+    }
+    return url.toString();
+}
+</script>
+{% endblock %}

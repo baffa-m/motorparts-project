@@ -1,0 +1,193 @@
+{% extends 'layout.html' %}
+
+{% block title %}Order Confirmed - MotorParts Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        /* Hide everything except the receipt area */
+        body * {
+            visibility: hidden;
+        }
+        .receipt-area, .receipt-area * {
+            visibility: visible;
+        }
+        .receipt-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        /* Hide buttons and navigation when printing */
+        .no-print, nav, footer, .btn {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Success Message -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5 no-print">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-primary mb-3">Order Confirmed!</h1>
+                <p class="lead text-muted mb-4">
+                    Thank you for your purchase. Your order has been successfully placed.
+                </p>
+                <div class="alert alert-success">
+                    <h5 class="alert-heading">Order Number: <strong>{{ order.order_number }}</strong></h5>
+                    <p class="mb-0">We've sent a confirmation email to <strong>{{ order.user.email }}</strong></p>
+                </div>
+            </div>
+
+            <!-- Order Summary Card - Receipt Area -->
+            <div class="receipt-area">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Order Details</h6>
+                                <p class="mb-1"><strong>Order Number:</strong> {{ order.order_number }}</p>
+                                <p class="mb-1"><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y h:i A" }}</p>
+                                <p class="mb-1"><strong>Payment Method:</strong> {{ order.payment_method|title }}</p>
+                                <p class="mb-1"><strong>Status:</strong> 
+                                    <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Shipping Address</h6>
+                                <p class="mb-1">{{ order.shipping_first_name }} {{ order.shipping_last_name }}</p>
+                                <p class="mb-1">{{ order.shipping_address }}</p>
+                                <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }}</p>
+                                <p class="mb-1">{{ order.shipping_postal_code }}</p>
+                                <p class="mb-1"><i class="fas fa-phone me-2"></i>{{ order.shipping_phone }}</p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6 class="fw-bold mb-3">Items Ordered</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items.all %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ item.part.image.url }}" 
+                                                     style="width: 40px; height: 40px; object-fit: cover;" 
+                                                     class="me-2 rounded">
+                                                <div>
+                                                    <strong>{{ item.part.name }}</strong><br>
+                                                    <small class="text-muted">{{ item.part.part_number }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">{{ item.quantity }}</td>
+                                        <td class="text-end align-middle">₦<span class="price-value">{{ item.unit_price }}</span></td>
+                                        <td class="text-end align-middle"><strong>₦<span class="price-value">{{ item.total_price }}</span></strong></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                        <td class="text-end"><strong>₦<span class="price-value">{{ order.subtotal }}</span></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                                        <td class="text-end"><strong>₦<span class="price-value">{{ order.shipping_amount }}</span></strong></td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td colspan="3" class="text-end"><h5 class="mb-0">Total:</h5></td>
+                                        <td class="text-end"><h5 class="mb-0 text-primary">₦<span class="price-value">{{ order.total_amount }}</span></h5></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What's Next Section -->
+            <div class="card mb-4 no-print">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>What Happens Next?</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-box-open fa-3x text-primary mb-2"></i>
+                                <h6 class="fw-bold">Processing</h6>
+                                <p class="small text-muted">We'll prepare your order for shipment</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-shipping-fast fa-3x text-primary mb-2"></i>
+                                <h6 class="fw-bold">Shipping</h6>
+                                <p class="small text-muted">Your order will be shipped within 1-2 business days</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-home fa-3x text-primary mb-2"></i>
+                                <h6 class="fw-bold">Delivery</h6>
+                                <p class="small text-muted">Estimated delivery in 3-5 business days</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row g-3 no-print">
+                <div class="col-md-4">
+                    <a href="{% url 'orders:detail' order.pk %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-eye me-2"></i>View Order Details
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-secondary w-100" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Receipt
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'parts:index' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Format all prices with commas
+    document.addEventListener('DOMContentLoaded', function() {
+        const priceElements = document.querySelectorAll('.price-value');
+        priceElements.forEach(function(element) {
+            const price = parseFloat(element.textContent);
+            element.textContent = price.toLocaleString('en-NG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        });
+    });
+</script>
+{% endblock %}

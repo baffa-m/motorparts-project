@@ -1,0 +1,83 @@
+{% extends '../../layout.html' %}
+
+{% block title %}Manufacturers - MotorParts Pro{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, #6d28d9 100%);">
+    <div class="container">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bold mb-3">Trusted Manufacturers</h1>
+            <p class="lead mb-0">We partner with the world's leading automotive brands</p>
+        </div>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row g-4">
+        {% for manufacturer in object_list %}
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card manufacturer-card h-100">
+                <div class="card-body text-center">
+                    {% if manufacturer.logo %}
+                    <img src="{{ manufacturer.logo.url }}" alt="{{ manufacturer.name }}"
+                         class="img-fluid mb-3" style="max-height: 100px; object-fit: contain;">
+                    {% else %}
+                    <div class="mb-3">
+                        <i class="fas fa-industry fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h5 class="fw-bold mb-3">{{ manufacturer.name }}</h5>
+                    
+                    <a href="{% url 'parts:index' %}?manufacturer={{ manufacturer.slug }}" 
+                       class="btn btn-outline-primary w-100">
+                        <i class="fas fa-eye me-2"></i>View Parts
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                No manufacturers found.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+.manufacturer-card {
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-color);
+}
+.manufacturer-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.15);
+    border-color: var(--accent-color);
+}
+</style>
+{% endblock %}

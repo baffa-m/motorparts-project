@@ -1,0 +1,125 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ part.name }} - MotorParts Pro{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="bg-light-custom py-3">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'parts:index' %}">Parts</a></li>
+            <li class="breadcrumb-item active">{{ part.name }}</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <img src="{{ part.image.url }}" class="card-img-top" alt="{{ part.name }}" id="mainImage">
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            <div class="mb-3">
+                {% if part.stock_quantity > 0 %}
+                <span class="badge bg-success fs-6 mb-2">In Stock</span>
+                {% else %}
+                <span class="badge bg-danger fs-6 mb-2">Out of Stock</span>
+                {% endif %}
+                <h1 class="h2 fw-bold text-primary">{{ part.name }}</h1>
+                <p class="text-muted">{{ part.description }}</p>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+                <span class="h2 text-primary fw-bold">{{ part.price }}</span>
+            </div>
+
+            <!-- Product Details -->
+            <div class="mb-4">
+                <h5 class="fw-bold">Product Details</h5>
+                <ul class="list-unstyled">
+                    <li><strong>OEM Number:</strong> {{ part.part_number }}</li>
+                    <li><strong>Manufacturer:</strong> {{ part.manufacturer.name }}</li>
+                    <li><strong>Condition:</strong> {{ part.get_condition_display }}</li>
+                    <li><strong>Category:</strong> {{ part.category.name }}</li>
+                    {% if part.vehicle_type %}
+                    <li><strong>Vehicle Type:</strong> {{ part.get_vehicle_type_display }}</li>
+                    {% endif %}
+                    <li><strong>Stock:</strong> {{ part.stock_quantity }} available</li>
+                </ul>
+            </div>
+
+            <!-- Add to Cart -->
+            {% if part.stock_quantity > 0 %}
+            <form method="post" action="{% url 'carts:add_to_cart' part.id %}" class="mb-4">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="quantity" 
+                               value="1" min="1" max="{{ part.stock_quantity }}">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% else %}
+            <button class="btn btn-secondary btn-lg w-100 mb-4" disabled>
+                Out of Stock
+            </button>
+            {% endif %}
+
+            <!-- Shipping Info -->
+            <div class="card bg-light-custom">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Shipping Information</h6>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-shipping-fast text-primary me-2"></i>
+                        <span>Free shipping on orders over ₦10,000</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-clock text-primary me-2"></i>
+                        <span>Same-day processing</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-undo text-primary me-2"></i>
+                        <span>30-day return policy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_parts %}
+    <section class="mt-5">
+        <h3 class="fw-bold text-primary mb-4">Related Products</h3>
+        <div class="row g-4">
+            {% for related in related_parts %}
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related.name }}</h6>
+                        <p class="text-primary fw-bold">{{ related.price }}</p>
+                        <a href="{% url 'parts:detail' related.pk %}" class="btn btn-outline-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -18,7 +18,6 @@
     {% load static %}
     <!-- Custom CSS -->
     <link href="{% static "styles.css" %}" rel="stylesheet">
-    
     <style>
         :root {
             --primary-color: #1f2937;
@@ -287,6 +286,99 @@
             height: 3px;
             background: var(--accent-color);
         }
+
+         /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .custom-toast {
+            min-width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        .custom-toast.hiding {
+            animation: slideOutRight 0.3s ease-out;
+        }
+        
+        .toast-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #111827 100%);
+            color: white;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 12px 15px;
+        }
+        
+        .toast-header.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .toast-header.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .toast-header.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .toast-header.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .toast-body {
+            padding: 15px;
+            color: var(--text-color);
+        }
+        
+        .toast-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .toast-progress {
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .toast-progress-bar {
+            height: 100%;
+            background: white;
+            width: 100%;
+            transition: width 5s linear;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -309,22 +401,35 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             Categories
                         </a>
+                        <!-- Dynamic categories from database -->
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/category/engine-parts">Engine Parts</a></li>
-                            <li><a class="dropdown-item" href="/category/electrical">Electrical Components</a></li>
-                            <li><a class="dropdown-item" href="/category/brake-system">Brake System</a></li>
-                            <li><a class="dropdown-item" href="/category/suspension">Suspension</a></li>
-                            <li><a class="dropdown-item" href="/category/transmission">Transmission</a></li>
+                            {% if all_categories %}
+                                {% for category in all_categories %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'parts:index' %}?category={{ category.slug }}">
+                                        {{ category.name }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item fw-bold text-primary" href="{% url 'parts:categories' %}">
+                                        <i class="fas fa-th me-2"></i>View All Categories
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="#">No categories available</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/manufacturers">Manufacturers</a>
+                        <a class="nav-link" href="{% url "parts:manufacturers" %}">Manufacturers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/about">About</a>
+                        <a class="nav-link" href="#">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contact">Contact</a>
+                        <a class="nav-link" href="#">Contact</a>
                     </li>
                 </ul>
                 
@@ -336,17 +441,33 @@
                         </button>
                     </form>
                     
-                    <a href="/cart" class="btn btn-outline-primary me-2 position-relative">
+                    <a href="{% url 'carts:cart_detail' %}" class="btn btn-outline-primary me-2 position-relative">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: var(--accent-color);">
-                            3
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: var(--accent-color);" id="cart-count">
+                            0
                         </span>
                     </a>
                     
                     {% if request.user.is_authenticated %}
-                        <a href="{% url "accounts:login" %}" class="btn btn-primary">
-                            <i class="fas fa-user me-1"></i>Account
-                        </a>
+                        <!-- Convert account button to dropdown menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>Account
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                        <i class="fas fa-user-circle me-2"></i>User Profile
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     {% else %}
                         <a href="{% url "accounts:login" %}" class="btn btn-primary">
                             <i class="fas fa-user me-1"></i>Login
@@ -357,105 +478,142 @@
         </div>
     </nav>
 
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Add Django messages display with auto-dismiss -->
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                showToast('{{ message|escapejs }}', '{{ message.tags }}');
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+
     <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer mt-5 py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="mb-3">
-                        <i class="fas fa-cog me-2"></i>MotorParts Pro
-                    </h5>
-                    <p class="mb-3">Your trusted partner for high-quality automotive parts. We provide genuine and aftermarket parts for all vehicle makes and models.</p>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-facebook-f fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-linkedin-in fa-lg"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="mb-3">Categories</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/category/engine-parts">Engine Parts</a></li>
-                        <li class="mb-2"><a href="/category/electrical">Electrical</a></li>
-                        <li class="mb-2"><a href="/category/brake-system">Brake System</a></li>
-                        <li class="mb-2"><a href="/category/suspension">Suspension</a></li>
-                        <li class="mb-2"><a href="/category/transmission">Transmission</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="mb-3">Support</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/help">Help Center</a></li>
-                        <li class="mb-2"><a href="/shipping">Shipping Info</a></li>
-                        <li class="mb-2"><a href="/returns">Returns</a></li>
-                        <li class="mb-2"><a href="/warranty">Warranty</a></li>
-                        <li class="mb-2"><a href="/contact">Contact Us</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="mb-3">Company</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/about">About Us</a></li>
-                        <li class="mb-2"><a href="/careers">Careers</a></li>
-                        <li class="mb-2"><a href="/press">Press</a></li>
-                        <li class="mb-2"><a href="/blog">Blog</a></li>
-                        <li class="mb-2"><a href="/partners">Partners</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="mb-3">Contact Info</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="fas fa-phone me-2"></i>
-                            +1 (555) 123-4567
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-envelope me-2"></i>
-                            info@motorpartspro.com
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            123 Auto Street, Detroit, MI
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="my-4" style="border-color: #475569;">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; 2024 MotorParts Pro. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="/privacy" class="me-3">Privacy Policy</a>
-                    <a href="/terms" class="me-3">Terms of Service</a>
-                    <a href="/cookies">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Updated auto-dismiss to 5 seconds and added cart count update -->
+    <script>
+        function showToast(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            // Map Django message tags to toast types
+            const typeMap = {
+                'error': 'error',
+                'success': 'success',
+                'warning': 'warning',
+                'info': 'info',
+                'debug': 'info'
+            };
+            
+            type = typeMap[type] || type;
+            
+            // Icon mapping
+            const icons = {
+                'success': 'fa-check-circle',
+                'error': 'fa-exclamation-circle',
+                'warning': 'fa-exclamation-triangle',
+                'info': 'fa-info-circle'
+            };
+            
+            // Title mapping
+            const titles = {
+                'success': 'Success',
+                'error': 'Error',
+                'warning': 'Warning',
+                'info': 'Info'
+            };
+            
+            const toastHTML = `
+                <div class="custom-toast ${type}" id="${toastId}">
+                    <div class="toast-header ${type}">
+                        <i class="fas ${icons[type]} me-2"></i>
+                        <strong class="me-auto">${titles[type]}</strong>
+                        <button type="button" class="btn-close" onclick="hideToast('${toastId}')"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <div class="toast-progress">
+                        <div class="toast-progress-bar" id="${toastId}-progress"></div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            
+            // Animate progress bar
+            setTimeout(() => {
+                const progressBar = document.getElementById(`${toastId}-progress`);
+                if (progressBar) {
+                    progressBar.style.width = '0%';
+                }
+            }, 100);
+            
+            // Auto hide after duration
+            setTimeout(() => {
+                hideToast(toastId);
+            }, duration);
+        }
+        
+        function hideToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.add('hiding');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }
+        }
+        
+        // Update cart count
+        function updateCartCount() {
+            fetch('/cart/count/')
+                .then(response => response.json())
+                .then(data => {
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.count || 0;
+                    }
+                })
+                .catch(error => console.error('Error fetching cart count:', error));
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+        });
+        
+        // Function to update cart count
+        function updateCartCount() {
+            fetch('/cart/count/')
+                .then(response => response.json())
+                .then(data => {
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.count || 0;
+                    }
+                })
+                .catch(error => console.error('[v0] Error fetching cart count:', error));
+        }
+        
+        // Helper function to format numbers with commas
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('en-NG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

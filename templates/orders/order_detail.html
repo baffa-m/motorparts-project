@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+
+{% block title %}Order Details - MotorParts Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        /* Hide everything except the receipt area */
+        body * {
+            visibility: hidden;
+        }
+        .receipt-area, .receipt-area * {
+            visibility: visible;
+        }
+        .receipt-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        /* Hide buttons and navigation when printing */
+        .no-print, nav, footer, .btn, .alert {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="alert alert-success no-print">
+        <h4 class="alert-heading">
+            <i class="fas fa-check-circle me-2"></i>Order Placed Successfully!
+        </h4>
+        <p class="mb-0">Order Number: <strong>{{ order.order_number }}</strong></p>
+    </div>
+
+    <div class="row receipt-area">
+        <div class="col-lg-8 mb-4">
+            <!-- Order Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Order Number:</strong><br>
+                            {{ order.order_number }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Order Date:</strong><br>
+                            {{ order.created_at|date:"F d, Y h:i A" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Status:</strong><br>
+                            <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Payment Status:</strong><br>
+                            <span class="badge bg-info">{{ order.get_payment_status_display }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Payment Method:</strong><br>
+                            {{ order.payment_method|default:"Not specified" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Items Ordered</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ item.part.image.url }}" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;" 
+                                                 class="me-2 rounded">
+                                            <div>
+                                                <strong>{{ item.part.name }}</strong><br>
+                                                <small class="text-muted">{{ item.part.part_number }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle">{{ item.quantity }}</td>
+                                    <td class="text-end align-middle">₦<span class="price-value">{{ item.unit_price }}</span></td>
+                                    <td class="text-end align-middle"><strong>₦<span class="price-value">{{ item.total_price }}</span></strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td class="text-end"><strong>₦<span class="price-value">{{ order.subtotal }}</span></strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                                    <td class="text-end"><strong>₦<span class="price-value">{{ order.shipping_amount }}</span></strong></td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>₦<span class="price-value">{{ order.total_amount }}</span></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Shipping Address -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <strong>{{ order.shipping_first_name }} {{ order.shipping_last_name }}</strong><br>
+                    {{ order.shipping_address }}<br>
+                    {{ order.shipping_city }}, {{ order.shipping_state }}<br>
+                    {{ order.shipping_postal_code }}<br>
+                    <i class="fas fa-phone me-2"></i>{{ order.shipping_phone }}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card no-print">
+                <div class="card-body">
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Invoice
+                    </button>
+                    <a href="{% url 'parts:index' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Format all prices with commas
+    document.addEventListener('DOMContentLoaded', function() {
+        const priceElements = document.querySelectorAll('.price-value');
+        priceElements.forEach(function(element) {
+            const price = parseFloat(element.textContent);
+            element.textContent = price.toLocaleString('en-NG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        });
+    });
+</script>
+{% endblock %}

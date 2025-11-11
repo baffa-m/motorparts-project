@@ -1,0 +1,237 @@
+{% extends 'layout.html' %}
+
+{% block title %}My Account - MotorParts Pro{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Profile Header -->
+    <div class="card mb-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, #6d28d9 100%);">
+        <div class="card-body text-white p-4">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    <div class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center"
+                         style="width: 100px; height: 100px;">
+                        <i class="fas fa-user fa-3x text-primary"></i>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <h2 class="mb-1">{{ user.get_full_name }}</h2>
+                    <p class="mb-0"><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+                    <p class="mb-0"><i class="fas fa-phone me-2"></i>{{ user.phone_no }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="list-group">
+                <a href="#orders" class="list-group-item list-group-item-action active" 
+                   onclick="showTab('orders', this)">
+                    <i class="fas fa-box me-2"></i>My Orders
+                </a>
+                <a href="#profile" class="list-group-item list-group-item-action" 
+                   onclick="showTab('profile', this)">
+                    <i class="fas fa-user me-2"></i>Profile Info
+                </a>
+                <a href="#address" class="list-group-item list-group-item-action" 
+                   onclick="showTab('address', this)">
+                    <i class="fas fa-map-marker-alt me-2"></i>Addresses
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="list-group-item list-group-item-action text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Added complete order history tab -->
+            <!-- Orders Tab -->
+            <div id="orders-tab" class="tab-content-panel">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Order History</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user.orders.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in user.orders.all %}
+                                    <tr>
+                                        <td><strong>{{ order.order_number }}</strong></td>
+                                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if order.status == 'delivered' %}bg-success
+                                                {% elif order.status == 'cancelled' %}bg-danger
+                                                {% elif order.status == 'shipped' %}bg-info
+                                                {% else %}bg-warning{% endif %}">
+                                                {{ order.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td><strong>₦{{ order.total_amount }}</strong></td>
+                                        <td>
+                                            <a href="{% url 'orders:detail' order.pk %}" class="btn btn-sm btn-outline-primary">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                            <h5>No orders yet</h5>
+                            <p class="text-muted">Start shopping to create your first order!</p>
+                            <a href="{% url 'parts:index' %}" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced profile info tab with form -->
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'accounts:update_profile' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" name="first_name" 
+                                           value="{{ user.first_name }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" name="last_name" 
+                                           value="{{ user.last_name }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" name="email" 
+                                           value="{{ user.email }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone *</label>
+                                    <input type="tel" class="form-control" name="phone_no" 
+                                           value="{{ user.phone_no }}" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Added password change section -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Change Password</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'accounts:change_password' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Current Password *</label>
+                                <input type="password" class="form-control" name="old_password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password *</label>
+                                <input type="password" class="form-control" name="new_password1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password *</label>
+                                <input type="password" class="form-control" name="new_password2" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Added address management tab -->
+            <!-- Address Tab -->
+            <div id="address-tab" class="tab-content-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Saved Addresses</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'accounts:update_address' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address" rows="3">{{ user.profile.address }}</textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-control" name="city" 
+                                           value="{{ user.profile.city }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">State</label>
+                                    <input type="text" class="form-control" name="state" 
+                                           value="{{ user.profile.state }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Postal Code</label>
+                                    <input type="text" class="form-control" name="postal_code" 
+                                           value="{{ user.profile.postal_code }}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Address
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName, element) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content-panel').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    
+    // Remove active class from all links
+    document.querySelectorAll('.list-group-item').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').style.display = 'block';
+    element.classList.add('active');
+    
+    return false;
+}
+</script>
+{% endblock %}

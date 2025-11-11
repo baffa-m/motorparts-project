@@ -1,0 +1,187 @@
+{% extends 'layout.html' %}
+
+{% block title %}Shopping Cart - MotorParts Pro{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="fas fa-shopping-cart me-2"></i>Shopping Cart
+    </h2>
+
+    {% if cart.items.all %}
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    {% for item in cart.items.all %}
+                    <div class="cart-item-simple" data-item-id="{{ item.id }}" data-unit-price="{{ item.part.price.amount }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 col-3 mb-3 mb-md-0">
+                                <img src="{{ item.part.image.url }}" 
+                                     alt="{{ item.part.name }}" 
+                                     class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-4 col-9 mb-3 mb-md-0">
+                                <h6 class="mb-1">{{ item.part.name }}</h6>
+                                <p class="text-muted small mb-0">{{ item.part.part_number }}</p>
+                                <p class="text-muted small mb-0">₦<span class="unit-price">{{ item.part.price.amount|floatformat:2 }}</span></p>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3 mb-md-0">
+                                <div class="input-group input-group-sm">
+                                    <button class="btn btn-outline-secondary" 
+                                            type="button"
+                                            onclick="updateQuantity(this, -1, {{ item.part.stock_quantity }})">-</button>
+                                    <input type="number" 
+                                           class="form-control text-center quantity-input" 
+                                           value="{{ item.quantity }}" 
+                                           min="1" 
+                                           max="{{ item.part.stock_quantity }}"
+                                           onchange="updateItemQuantity({{ item.id }}, this.value, {{ item.part.stock_quantity }})"
+                                           style="max-width: 70px;">
+                                    <button class="btn btn-outline-secondary" 
+                                            type="button"
+                                            onclick="updateQuantity(this, 1, {{ item.part.stock_quantity }})">+</button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4 mb-3 mb-md-0">
+                                <strong class="text-primary item-total">₦{{ item.get_total_price|floatformat:2 }}</strong>
+                            </div>
+                            <div class="col-md-1 col-2">
+                                <form method="post" action="{% url 'carts:remove_item' item.id %}" class="remove-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Subtotal:</span>
+                        <strong id="cart-subtotal">₦{{ cart.get_total_price|floatformat:2 }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Shipping:</span>
+                        <strong class="text-success">Calculated at checkout</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <h5>Total:</h5>
+                        <h5 class="text-primary" id="cart-total">₦{{ cart.get_total_price|floatformat:2 }}</h5>
+                    </div>
+                    
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-lg w-100 mb-2">
+                        <i class="fas fa-lock me-2"></i>Checkout
+                    </a>
+                    <a href="{% url 'parts:index' %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+     Empty Cart 
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+        <h3 class="mb-3">Your Cart is Empty</h3>
+        <p class="text-muted mb-4">Add some items to get started!</p>
+        <a href="{% url 'parts:index' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.cart-item-simple {
+    padding: 1.5rem 0;
+    border-bottom: 2px solid #f1f1f1;
+}
+.cart-item-simple:last-child {
+    border-bottom: none;
+}
+</style>
+
+<script>
+function updateQuantity(btn, change, maxStock) {
+    const input = btn.parentElement.querySelector('.quantity-input');
+    const current = parseInt(input.value);
+    const newValue = current + change;
+    
+    if (newValue >= 1 && newValue <= maxStock) {
+        input.value = newValue;
+        const itemId = btn.closest('.cart-item-simple').dataset.itemId;
+        updateItemQuantity(itemId, newValue, maxStock);
+    }
+}
+
+function updateItemQuantity(itemId, quantity, maxStock) {
+    quantity = parseInt(quantity);
+    
+    if (quantity < 1 || quantity > maxStock) {
+        showToast(`Quantity must be between 1 and ${maxStock}`, 'warning');
+        return;
+    }
+    
+    // Update UI immediately for better UX
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    const unitPrice = parseFloat(itemElement.dataset.unitPrice);
+    const itemTotal = unitPrice * quantity;
+    
+    itemElement.querySelector('.item-total').textContent = '₦' + formatPrice(itemTotal);
+    
+    // Recalculate cart totals
+    updateCartTotals();
+    
+    // Send update to server
+    const formData = new FormData();
+    formData.append('quantity', quantity);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch(`/cart/update/${itemId}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateCartCount();
+        } else {
+            showToast(data.message || 'Failed to update cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('[v0] Error updating cart:', error);
+        showToast('Failed to update cart', 'error');
+    });
+}
+
+function updateCartTotals() {
+    let subtotal = 0;
+    
+    document.querySelectorAll('.cart-item-simple').forEach(item => {
+        const unitPrice = parseFloat(item.dataset.unitPrice);
+        const quantity = parseInt(item.querySelector('.quantity-input').value);
+        subtotal += unitPrice * quantity;
+    });
+    
+    document.getElementById('cart-subtotal').textContent = '₦' + formatPrice(subtotal);
+    document.getElementById('cart-total').textContent = '₦' + formatPrice(subtotal);
+}
+</script>
+{% endblock %}

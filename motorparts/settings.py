@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djmoney',
     'accounts',
     'parts',
     'payment',
@@ -44,6 +45,11 @@ INSTALLED_APPS = [
     'shipping',
     'carts',
 ]
+
+MEDIA_URL = '/uploads/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads') # Or 'media'
+
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -62,13 +68,16 @@ ROOT_URLCONF = 'motorparts.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates', 
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'carts.context_processors.cart_context',
             ],
         },
     },
@@ -80,12 +89,17 @@ WSGI_APPLICATION = 'motorparts.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'NAME': 'motorparts_pro',
+          'USER': 'root',
+          'PASSWORD': 'root_pass',
+          'HOST': 'localhost',  # Or the IP/hostname of your MySQL server
+          'PORT': '3306',       # Default MySQL port, adjust if different
+      }
+  }
 
 
 # Password validation
@@ -130,3 +144,8 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Paystack Configuration
+PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', 'pk_test_bd86e043cd050cfa763b81b3942792f9cf27f319')
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_1dbf7459e680cf7f2a9bf97130b4c78efed20a6a')

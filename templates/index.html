@@ -1,0 +1,589 @@
+{% extends 'layout.html' %}
+
+{% block title %}MotorParts Pro - Professional Automotive Parts & Components{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold mb-4" style="font-family: 'Playfair Display', serif; color: white;">
+                    Premium Automotive Parts for Every Drive
+                </h1>
+                <p class="lead mb-4" style="font-size: 1.3rem;">
+                    Discover exceptional quality automotive components from the industry's most trusted manufacturers. 
+                    Professional-grade parts with uncompromising reliability.
+                </p>
+                
+                <!-- Search Bar -->
+                <form method="get" action="{% url 'parts:index' %}" class="mb-4">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <input type="text" 
+                                   name="q"
+                                   class="form-control form-control-lg search-bar" 
+                                   placeholder="Search by part name, OEM number, or vehicle..."
+                                   style="padding: 1rem 1.5rem;">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-secondary btn-lg search-btn w-100" style="padding: 1rem;">
+                                <i class="fas fa-search me-2"></i>Find Parts
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Trust Indicators -->
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <i class="fas fa-shipping-fast fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Express Shipping</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <i class="fas fa-shield-alt fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Lifetime Warranty</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="trust-badge">
+                            <i class="fas fa-award fa-2x mb-2" style="color: var(--accent-color);"></i>
+                            <small class="d-block fw-semibold">Certified Quality</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block hero-image-wrapper">
+                {% load static %}
+                <img src="{% static "hero.png" %}" 
+                     alt="Premium Automotive Parts" 
+                     class="img-fluid hero-image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    padding: 60px 0;
+}
+
+.hero-image-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-image {
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
+    margin-right: -50px;
+    margin-top: -30px;
+    margin-bottom: -30px;
+    max-width: 120%;
+    transition: transform 0.4s ease;
+}
+
+.hero-image:hover {
+    transform: scale(1.15);
+}
+
+/* Alternative: Make image break out to the right */
+@media (min-width: 992px) {
+    .hero-image-wrapper {
+        margin-right: -100px;
+        padding-right: 100px;
+    }
+    
+    .hero-image {
+        position: relative;
+        right: -50px;
+    }
+}
+
+/* Optional: Add a subtle gradient overlay for depth */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.02) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+</style>
+<!-- Categories Section -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Explore Our Premium Categories</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">
+                Professional-grade components for every automotive system
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'parts:index' %}?category={{ category.slug }}" 
+                   class="text-decoration-none">
+                    <div class="category-card h-100">
+                        <i class="fas fa-cogs fa-4x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold" style="font-family: 'Playfair Display', serif;">
+                            {{ category.name }}
+                        </h5>
+                        <p class="text-muted mb-3">
+                            {{ category.description|default:"Quality parts for your vehicle"|truncatewords:10 }}
+                        </p>
+                        <span class="btn btn-outline-primary">Explore Collection</span>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <!-- Default categories if none exist -->
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'parts:index' %}" class="text-decoration-none">
+                    <div class="category-card h-100">
+                        <i class="fas fa-cogs fa-4x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold">Engine Components</h5>
+                        <p class="text-muted mb-3">Precision-engineered pistons, gaskets, filters</p>
+                        <span class="btn btn-outline-primary">Explore Collection</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'parts:index' %}" class="text-decoration-none">
+                    <div class="category-card h-100">
+                        <i class="fas fa-bolt fa-4x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold">Electrical Systems</h5>
+                        <p class="text-muted mb-3">Premium batteries, alternators, starters</p>
+                        <span class="btn btn-outline-primary">Explore Collection</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'parts:index' %}" class="text-decoration-none">
+                    <div class="category-card h-100">
+                        <i class="fas fa-car fa-4x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold">Brake Systems</h5>
+                        <p class="text-muted mb-3">High-performance pads, rotors, calipers</p>
+                        <span class="btn btn-outline-primary">Explore Collection</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'parts:index' %}" class="text-decoration-none">
+                    <div class="category-card h-100">
+                        <i class="fas fa-tools fa-4x mb-3" style="color: var(--accent-color);"></i>
+                        <h5 class="fw-bold">Suspension</h5>
+                        <p class="text-muted mb-3">Professional shocks, struts, springs</p>
+                        <span class="btn btn-outline-primary">Explore Collection</span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+            <div class="text-center mt-5">
+            <a href="{% url 'parts:categories' %}" class="btn btn-secondary btn-lg px-5">
+                View All Categories <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Featured Premium Parts</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">
+                Handpicked components from the world's finest manufacturers
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            {% for part in featured_parts %}
+            <div class="col-lg-3 col-md-6">
+                <div class="card product-card h-100">
+                    <div class="position-relative">
+                        <img src="{{ part.image.url }}" 
+                             class="card-img-top" 
+                             alt="{{ part.name }}">
+                        <span class="badge mb-2 position-absolute top-0 end-0 m-2" 
+                              style="background-color: var(--accent-color);">
+                            Featured
+                        </span>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <small class="text-muted mb-1">{{ part.manufacturer.name }}</small>
+                        <h6 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">
+                            {{ part.name }}
+                        </h6>
+                        <p class="card-text text-muted small">{{ part.description|truncatewords:12 }}</p>
+                        <p class="text-muted small mb-2"><strong>OEM:</strong> {{ part.part_number }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 fw-bold mb-0" style="color: var(--accent-color);">
+                                    {{ part.price }}
+                                </span>
+                                <small class="text-muted">{{ part.stock_quantity }} available</small>
+                            </div>
+                            <a href="{% url 'parts:detail' part.pk %}" class="btn btn-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Show message if no featured parts -->
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Featured parts coming soon! Browse our full catalog in the meantime.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'parts:index' %}" class="btn btn-secondary btn-lg px-5">
+                View All Parts <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Manufacturers -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Trusted Manufacturers</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">
+                We partner with the world's leading automotive brands
+            </p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% for manufacturer in manufacturers %}
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                <a href="{% url 'parts:index' %}?manufacturer={{ manufacturer.slug }}" 
+                   class="text-decoration-none">
+                    <div class="manufacturer-box">
+                        {% if manufacturer.logo %}
+                        <img src="{{ manufacturer.logo.url }}" 
+                             alt="{{ manufacturer.name }}"
+                             class="img-fluid">
+                        {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-industry fa-3x text-muted"></i>
+                            <p class="small mt-2 mb-0">{{ manufacturer.name }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center text-muted">Loading manufacturers...</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'parts:manufacturers' %}" class="btn btn-outline-primary btn-lg px-5">
+                View All Manufacturers <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">
+                Trusted by automotive professionals and enthusiasts worldwide
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">
+                        "Outstanding quality parts and incredibly fast shipping. MotorParts Pro has become my go-to supplier for all automotive components."
+                    </p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mike Rodriguez</h6>
+                            <small class="text-muted">Auto Shop Owner</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">
+                        "The expertise and customer service is unmatched. They helped me find the exact OEM part I needed for my classic restoration project."
+                    </p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Sarah Chen</h6>
+                            <small class="text-muted">Classic Car Enthusiast</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="mb-3" style="color: #ffc107;">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="mb-3">
+                        "Professional-grade parts at competitive prices. The warranty coverage gives me complete confidence in every purchase."
+                    </p>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">David Thompson</h6>
+                            <small class="text-muted">Fleet Manager</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5 premium-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">The MotorParts Pro Advantage</h2>
+            <p class="lead text-muted" style="font-size: 1.2rem;">
+                Excellence in every component, service, and interaction
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-certificate fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">
+                    Certified Authentic Parts
+                </h4>
+                <p class="text-muted">
+                    Every component is sourced directly from OEM manufacturers and authorized distributors, ensuring authenticity and reliability.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-shipping-fast fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">
+                    Express Nationwide Delivery
+                </h4>
+                <p class="text-muted">
+                    Same-day processing with expedited shipping options. Our advanced logistics network ensures rapid delivery across the country.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-users fa-4x mb-3" style="color: var(--accent-color);"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif;">
+                    Expert Technical Support
+                </h4>
+                <p class="text-muted">
+                    Our certified automotive specialists provide personalized guidance to ensure you get the perfect parts for your specific application.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h3 class="fw-bold mb-3" style="font-family: 'Playfair Display', serif; font-size: 2.2rem;">
+                    Stay Connected with Premium Updates
+                </h3>
+                <p class="text-muted mb-4" style="font-size: 1.1rem;">
+                    Subscribe for exclusive access to new arrivals, technical insights, and special offers from the automotive industry's finest.
+                </p>
+                
+                <form class="row g-2 justify-content-center">
+                    <div class="col-md-6">
+                        <input type="email" 
+                               class="form-control form-control-lg" 
+                               placeholder="Enter your email"
+                               style="padding: 1rem 1.5rem;">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-secondary btn-lg w-100" style="padding: 1rem;">
+                            Subscribe
+                        </button>
+                    </div>
+                </form>
+                
+                <small class="text-muted mt-3 d-block">
+                    <i class="fas fa-shield-alt me-1" style="color: var(--accent-color);"></i>
+                    Your privacy is protected. Premium content, no spam, unsubscribe anytime.
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer mt-5 py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-cog me-2"></i>MotorParts Pro
+                </h5>
+                <p class="mb-3">Your trusted partner for high-quality automotive parts. We provide genuine and aftermarket parts for all vehicle makes and models.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-decoration-none">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-decoration-none">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-decoration-none">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-decoration-none">
+                        <i class="fab fa-linkedin-in fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="mb-3">Categories</h5>
+                <!-- Dynamic categories from database in footer -->
+                <ul class="list-unstyled">
+                    {% if all_categories %}
+                        {% for category in all_categories|slice:":5" %}
+                        <li class="mb-2">
+                            <a href="{% url 'parts:index' %}?category={{ category.slug }}">
+                                {{ category.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                        <li class="mb-2">
+                            <a href="{% url 'parts:categories' %}" class="fw-bold text-decoration-underline">
+                                View All Categories
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="mb-2"><a href="#">No categories available</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="mb-3">Company</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#">About Us</a></li>
+                    <li class="mb-2"><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="mb-3">Contact Info</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Sokoto State, Nigeria
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="my-4" style="border-color: #475569;">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2025 MotorParts Pro. All rights reserved.</p>
+            </div>
+            
+        </div>
+    </div>
+</footer>
+<style>
+.manufacturer-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.manufacturer-box:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+}
+
+.manufacturer-box img {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+}
+</style>
+{% endblock %}
+
+{% block show_footer %}true{% endblock %}
